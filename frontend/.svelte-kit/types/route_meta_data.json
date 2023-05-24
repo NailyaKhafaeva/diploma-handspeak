@@ -1,0 +1,17 @@
+{
+	"/": [
+		"src/routes/+page.ts"
+	],
+	"/levels": [
+		"src/routes/levels/+page.ts"
+	],
+	"/levels/[levelId]": [
+		"src/routes/levels/[levelId]/+page.ts"
+	],
+	"/levels/[levelId]/[lessonId]": [
+		"src/routes/levels/[levelId]/[lessonId]/+page.ts"
+	],
+	"/login": [],
+	"/profile": [],
+	"/signup": []
+}
