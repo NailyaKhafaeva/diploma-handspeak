@@ -8,7 +8,6 @@ from flask import Flask, request, send_file
 from keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 from flask import current_app
-from .models import User, Progress, Lesson, Level
 import jwt
 
 
@@ -29,9 +28,16 @@ def upload_image():
             return jsonify({'error': 'Invalid token'})
 
         file = request.files['image']
-        counter = request.form['number']
-        classifier = load_model('letters.h5')
+        gesture = request.form['number']
+        level = request.form['level']
+        classifier = 0;
 
+        if (int(level) == 1):
+            classifier = load_model('numbers.h5')
+        else:
+            classifier = load_model('letters.h5')
+
+        print(type(classifier))
         img = cv2.imdecode(np.frombuffer(file.read(), np.uint8), cv2.IMREAD_COLOR)
         frame_1 = img_to_array(img)
 
@@ -46,14 +52,16 @@ def upload_image():
         result = classifier.predict(roi)
         number = np.argmax(result)
 
-        print(number)
+        if (number == int(gesture)):
+            gesture = 1
+        else: gesture = 0
 
-        if (number == int(counter)):
-            counter = 100
-        # dictionary = {0: 'A', 1: 'B', 2: 'Г', 3: 'Е', 4: 'Ж', 5: 'И', 6: 'Л', 7: 'М', 8: 'Н', 9: 'О', 10: 'П', 11: 'Р',
-        #               12: 'С', 13: 'Т', 14: 'У', 15: 'Ф', 16: 'Х', 17: 'Ч', 18: 'Ш', 19: 'Ы', 20: 'Э', 21: 'Ю', 22: 'Я'}
-        # cv2.putText(copy, str(dictionary[number]), (300, 100), cv2.FONT_HERSHEY_COMPLEX, 2, (0, 255, 0), 2)
-        cv2.putText(copy, str(number), (300, 100), cv2.FONT_HERSHEY_COMPLEX, 2, (0, 255, 0), 2)
+        if (int(level) == 1):
+            cv2.putText(copy, str(number), (300, 100), cv2.FONT_HERSHEY_COMPLEX, 2, (0, 255, 0), 2)
+        else:
+            dictionary = {0: 'A', 1: 'B', 2: 'Г', 3: 'Е', 4: 'Ж', 5: 'И', 6: 'Л', 7: 'М', 8: 'Н', 9: 'О', 10: 'П', 11: 'Р',
+                          12: 'С', 13: 'Т', 14: 'У', 15: 'Ф', 16: 'Х', 17: 'Ч', 18: 'Ш', 19: 'Ы', 20: 'Э', 21: 'Ю', 22: 'Я'}
+            cv2.putText(copy, str(dictionary[number]), (300, 100), cv2.FONT_HERSHEY_COMPLEX, 2, (0, 255, 0), 2)
 
         # Convert the OpenCV image to RGB color space
         copy_rgb = cv2.cvtColor(copy, cv2.COLOR_BGR2RGB)
@@ -68,15 +76,12 @@ def upload_image():
 
         encoded_string = base64.b64encode(file_object.getvalue()).decode('utf-8')
 
-        # Create a response dictionary with the image and counter
         response = {
             'image': 'data:image/png;base64, ' + encoded_string,
-            'counter': counter
+            'result': gesture
         }
 
-        # Convert the response dictionary to JSON
         response_json = jsonify(response)
-
         return response_json
     except jwt.exceptions.DecodeError:
         return jsonify({'error': 'Invalid11 token'})

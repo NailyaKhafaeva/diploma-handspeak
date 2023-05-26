@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask import current_app
 import jwt
-from .models import User, Progress, Lesson, Level
+from .models import Users, Progress, Lessons, Levels
 from . import db
 
 database_utils = Blueprint('database_utils', __name__)
@@ -21,13 +21,13 @@ def get_progress():
             return jsonify({'error': 'Invalid token'})
 
         request_data = request.get_json()
-        lesson_id = request_data.get('lesson_id')
+        lesson_id = request_data.get('currentLesson')
 
         if not lesson_id:
             return jsonify({'error': 'Lesson ID is missing'})
 
         progress = Progress.query.filter_by(user_id=user_id, lesson_id=lesson_id).first()
-        return jsonify({'progress': progress.value})
+        return jsonify({'progress': progress.value, 'gesture': progress.last_gesture})
     except jwt.exceptions.DecodeError:
         return jsonify({'error': 'Invalid11 token'})
 
@@ -45,7 +45,7 @@ def get_levels():
         if not user_id:
             return jsonify({'error': 'Invalid token'})
 
-        levels = Level.query.all()
+        levels = Levels.query.all()
         levels_list = []
         for level in levels:
             level_dict = {
@@ -73,7 +73,7 @@ def get_lessons(level_id):
         if not user_id:
             return jsonify({'error': 'Invalid token'})
 
-        lessons = Lesson.query.filter_by(level_id=level_id).order_by(Lesson.id).all()
+        lessons = Lessons.query.filter_by(level_id=level_id).order_by(Lessons.id).all()
         result = []
 
         for lesson in lessons:
@@ -102,7 +102,7 @@ def get_lesson(level_id, lesson_id):
         if not user_id:
             return jsonify({'error': 'Invalid token'})
 
-        lessons = Lesson.query.filter_by(level_id=level_id, id=lesson_id).order_by(Lesson.id).all()
+        lessons = Lessons.query.filter_by(level_id=level_id, id=lesson_id).order_by(Lessons.id).all()
         result = []
         for lesson in lessons:
             result.append({
@@ -131,12 +131,14 @@ def update_progress():
             return jsonify({'error': 'Invalid token'})
 
         request_data = request.get_json()
-        lesson_id = request_data.get('lesson_id')
+        lesson_id = request_data.get('currentLesson')
         value = request_data.get('progressValue')
+        last_gesture = request_data.get('lastGesture')
 
-        record = Progress.query.filter_by(user_id=user_id, lesson_id=lesson_id).first()
+        progress = Progress.query.filter_by(user_id=user_id, lesson_id=lesson_id).first()
 
-        record.value = value
+        progress.value = value
+        progress.last_gesture = last_gesture
         db.session.commit()
         return jsonify({'success': True})
 

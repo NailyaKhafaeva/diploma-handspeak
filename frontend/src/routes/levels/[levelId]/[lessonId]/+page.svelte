@@ -17,19 +17,20 @@
     const { lesson } = data;
 
     let progressValue = 0;
-    let counter = 0;
-    let level_id = lesson[0].level_id;
-    let lesson_id = lesson[0].id;
+    let result = 0;
+    let currentLevel = lesson[0].level_id;
+    let currentLesson = lesson[0].id;
     let video;
     let photo = null;
 
     let stream;
     let canvas;
     let startbutton = null;
-    let i = 0;
 
     let numbers = []
     let letters_map = {}
+    let number = 0;
+    let lastGesture = 0;
 
     function getRandomInt(min, max) {
         min = Math.ceil(min);
@@ -37,44 +38,44 @@
         return Math.floor(Math.random() * (max - min)) + min;
     }
 
-    if (level_id === 1) {
-        if (lesson_id === 1) {
+    if (currentLevel === 1) {
+        if (currentLesson === 1) {
             numbers = [0, 1, 2, 3, 4]
             for (let step = 0; step < 15; step++) {
                 numbers.push(getRandomInt(0, 5))
             }
-        } else if (lesson_id === 2) {
+        } else if (currentLesson === 2) {
             numbers = [5, 6, 7, 8, 9]
             for (let step = 0; step < 15; step++) {
                 numbers.push(getRandomInt(5, 10))
             }
         }
-    } else if (level_id === 2) {
-        if (lesson_id === 3) {
+    } else if (currentLevel === 2) {
+        if (currentLesson === 3) {
             letters_map = {0: 'A', 1: 'B', 2: 'Г', 3: 'Е', 4: 'Ж'}
             numbers = [0, 1, 2, 3, 4]
             for (let step = 0; step < 15; step++) {
                 numbers.push(getRandomInt(0, 5))
             }
-        } else if (lesson_id === 4) {
+        } else if (currentLesson === 4) {
             letters_map = {5: 'И', 6: 'Л', 7: 'М', 8: 'Н', 9: 'О'}
             numbers = [5, 6, 7, 8, 9]
             for (let step = 0; step < 15; step++) {
                 numbers.push(getRandomInt(5, 10))
             }
-        } else if (lesson_id === 5) {
+        } else if (currentLesson === 5) {
             letters_map = {10: 'П', 11: 'Р', 12: 'С', 13: 'Т', 14: 'У'}
             numbers = [10, 11, 12, 13, 14]
             for (let step = 0; step < 15; step++) {
                 numbers.push(getRandomInt(10, 15))
             }
-        } else if (lesson_id === 6) {
+        } else if (currentLesson === 6) {
             letters_map = {15: 'Ф', 16: 'Х', 17: 'Ч', 18: 'Ш', 19: 'Ы'}
             numbers = [15, 16, 17, 18, 19]
             for (let step = 0; step < 15; step++) {
                 numbers.push(getRandomInt(15, 20))
             }
-        } else if (lesson_id === 7) {
+        } else if (currentLesson === 7) {
             letters_map = {20: 'Э', 21: 'Ю', 22: 'Я'}
             numbers = [20, 21, 22]
             for (let step = 0; step < 15; step++) {
@@ -82,7 +83,6 @@
             }
         }
     }
-    let number = numbers[i];
 
     async function getStream() {
         video = document.getElementById("video");
@@ -111,6 +111,7 @@
             console.error(err);
         }
     }
+
     async function progressUpdate() {
         const token = localStorage.getItem('token')
         const config = {
@@ -121,14 +122,15 @@
         };
 
         try {
-            const response = await axios.post(PUBLIC_API_URL + '/update_progress', { lesson_id, progressValue }, config);
+            const response = await axios.post(PUBLIC_API_URL + '/update_progress',
+                { currentLesson, progressValue, lastGesture }, config);
             const result = response.data;
 
             if (result.success) {
-                notifications.success('Ваш прогресс сохранен', 3000)
+                notifications.success('Ваш прогресс сохранен', 1000)
 
             } else {
-                notifications.danger('Произошла ошибка, прогресс не сохранился', 3000)
+                notifications.danger('Произошла ошибка, прогресс не сохранился', 1000)
             }
         } catch (error) {
             console.error(error);
@@ -159,6 +161,9 @@
             const formData = new FormData();
             formData.append('image', data);
             formData.append('number', number);
+            formData.append('level', currentLevel);
+
+            console.log(currentLevel)
 
             const token = localStorage.getItem('token')
 
@@ -176,21 +181,23 @@
             if (response) {
                 const data = response.data;
                 const imageUrl = data.image;
-                counter = data.counter;
+                result = data.result;
                 photo.setAttribute("src", imageUrl);
             } else {
                 console.error('Image upload failed.');
             }
 
-            if(counter == 100) {
+            if (result === 1) {
                 progressValue += 5;
-                i++;
-                number = numbers[i];
-                notifications.success('Правильно!', 5000)
+                lastGesture++;
+                if (lastGesture === 15) {
+                    lastGesture = 0;
+                }
+                number = numbers[lastGesture];
+                notifications.success('Правильно!', 1000)
             } else(
-                notifications.danger('Жест показан неправильно! Попробуйте еще раз!', 5000)
+                notifications.danger('Жест показан неправильно! Попробуйте еще раз!', 1000)
             )
-
 
         } catch (error) {
             console.error(error);
@@ -208,10 +215,11 @@
         };
 
         try {
-            const response = await axios.post(PUBLIC_API_URL + '/get_progress', { lesson_id }, config);
+            const response = await axios.post(PUBLIC_API_URL + '/get_progress', { currentLesson }, config);
             const result = response.data;
             progressValue = result.progress;
-            console.log(result.progress)
+            lastGesture = result.gesture;
+            number = numbers[lastGesture];
         } catch (error) {
             console.error(error);
         }
@@ -230,28 +238,28 @@
     </div>
 
     <div>
-        {#if level_id === 1}
-            {#if lesson_id === 1}
+        {#if currentLevel === 1}
+            {#if currentLesson === 1}
                 <img src={Image11} alt="image">
             {/if}
-            {#if lesson_id === 2}
+            {#if currentLesson === 2}
                 <img src={Image12} alt="image">
             {/if}
         {/if}
-        {#if level_id === 2}
-            {#if lesson_id === 3}
+        {#if currentLevel === 2}
+            {#if currentLesson === 3}
                 <img src={Image21} alt="image">
             {/if}
-            {#if lesson_id === 4}
+            {#if currentLesson === 4}
                 <img src={Image22} alt="image">
             {/if}
-            {#if lesson_id === 5}
+            {#if currentLesson === 5}
                 <img src={Image23} alt="image">
             {/if}
-            {#if lesson_id === 6}
+            {#if currentLesson  === 6}
                 <img src={Image24} alt="image">
             {/if}
-            {#if lesson_id === 7}
+            {#if currentLesson === 7}
                 <img src={Image25} alt="image">
             {/if}
         {/if}
@@ -260,11 +268,11 @@
     <div class="contentarea">
         <h1>Практика</h1>
         <p>Для начала тренировки нажмите "Начать".</p>
-        {#if level_id === 1}
+        {#if currentLevel === 1}
             <p>Покажите жестом цифру {number}, расположите жест внутри синей рамки</p>
         {/if}
 
-        {#if level_id === 2}
+        {#if currentLevel === 2}
             <p>Покажите жестом букву {letters_map[number]}, расположите жест внутри синей рамки</p>
         {/if}
 

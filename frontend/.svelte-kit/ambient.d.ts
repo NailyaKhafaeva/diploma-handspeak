@@ -40,6 +40,7 @@ declare module '$env/static/private' {
 	export const npm_config_noproxy: string;
 	export const HOME: string;
 	export const SNAP_LIBRARY_PATH: string;
+	export const OLDPWD: string;
 	export const DESKTOP_SESSION: string;
 	export const SNAP_USER_DATA: string;
 	export const NVM_BIN: string;
@@ -60,6 +61,8 @@ declare module '$env/static/private' {
 	export const COLOR: string;
 	export const NVM_DIR: string;
 	export const npm_config_metrics_registry: string;
+	export const IM_CONFIG_PHASE: string;
+	export const WAYLAND_DISPLAY: string;
 	export const LOGNAME: string;
 	export const SNAP_CONTEXT: string;
 	export const JOURNAL_STREAM: string;
@@ -73,7 +76,6 @@ declare module '$env/static/private' {
 	export const GNOME_DESKTOP_SESSION_ID: string;
 	export const RBENV_SHELL: string;
 	export const SNAP_INSTANCE_NAME: string;
-	export const WINDOWPATH: string;
 	export const npm_config_node_gyp: string;
 	export const PATH: string;
 	export const SESSION_MANAGER: string;
@@ -83,6 +85,7 @@ declare module '$env/static/private' {
 	export const XDG_MENU_PREFIX: string;
 	export const LC_ADDRESS: string;
 	export const BAMF_DESKTOP_FILE_HINT: string;
+	export const GNOME_SETUP_DISPLAY: string;
 	export const SNAP_DATA: string;
 	export const XDG_RUNTIME_DIR: string;
 	export const DISPLAY: string;
@@ -110,7 +113,6 @@ declare module '$env/static/private' {
 	export const LESSCLOSE: string;
 	export const SNAP_NAME: string;
 	export const LC_MEASUREMENT: string;
-	export const GPG_AGENT_INFO: string;
 	export const GJS_DEBUG_OUTPUT: string;
 	export const LC_IDENTIFICATION: string;
 	export const QT_IM_MODULE: string;
@@ -174,6 +176,7 @@ declare module '$env/dynamic/private' {
 		npm_config_noproxy: string;
 		HOME: string;
 		SNAP_LIBRARY_PATH: string;
+		OLDPWD: string;
 		DESKTOP_SESSION: string;
 		SNAP_USER_DATA: string;
 		NVM_BIN: string;
@@ -194,6 +197,8 @@ declare module '$env/dynamic/private' {
 		COLOR: string;
 		NVM_DIR: string;
 		npm_config_metrics_registry: string;
+		IM_CONFIG_PHASE: string;
+		WAYLAND_DISPLAY: string;
 		LOGNAME: string;
 		SNAP_CONTEXT: string;
 		JOURNAL_STREAM: string;
@@ -207,7 +212,6 @@ declare module '$env/dynamic/private' {
 		GNOME_DESKTOP_SESSION_ID: string;
 		RBENV_SHELL: string;
 		SNAP_INSTANCE_NAME: string;
-		WINDOWPATH: string;
 		npm_config_node_gyp: string;
 		PATH: string;
 		SESSION_MANAGER: string;
@@ -217,6 +221,7 @@ declare module '$env/dynamic/private' {
 		XDG_MENU_PREFIX: string;
 		LC_ADDRESS: string;
 		BAMF_DESKTOP_FILE_HINT: string;
+		GNOME_SETUP_DISPLAY: string;
 		SNAP_DATA: string;
 		XDG_RUNTIME_DIR: string;
 		DISPLAY: string;
@@ -244,7 +249,6 @@ declare module '$env/dynamic/private' {
 		LESSCLOSE: string;
 		SNAP_NAME: string;
 		LC_MEASUREMENT: string;
-		GPG_AGENT_INFO: string;
 		GJS_DEBUG_OUTPUT: string;
 		LC_IDENTIFICATION: string;
 		QT_IM_MODULE: string;

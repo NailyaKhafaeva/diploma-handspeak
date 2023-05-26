@@ -12,19 +12,19 @@ def create_app():
     CORS(app)
     CORS(app, origins=['http://localhost:5000'], methods=['GET', 'POST'])
 
-    app.config['SECRET_KEY'] = 'sdfghjkjjb36547687jnrhbserh4yu'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost/my_db'
+    app.config['SECRET_KEY'] = 'your_secret_key'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/db_name'
 
     db.init_app(app)
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
 
-    from .models import User
+    from .models import Users
 
     @login_manager.user_loader
     def load_user(user_id):
-        return User.query.get(int(user_id))
+        return Users.query.get(int(user_id))
 
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
