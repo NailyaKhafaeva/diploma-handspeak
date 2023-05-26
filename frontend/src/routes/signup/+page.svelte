@@ -17,7 +17,9 @@
 									"Access-Control-Allow-Origin": "*" }
 					});
 
-			if (response.status === 201) {
+			const result = response.data;
+
+			if (result.success) {
 				alert('Registration successful!');
 				username = '';
 				email = '';

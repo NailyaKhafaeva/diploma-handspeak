@@ -40,7 +40,6 @@ declare module '$env/static/private' {
 	export const npm_config_noproxy: string;
 	export const HOME: string;
 	export const SNAP_LIBRARY_PATH: string;
-	export const OLDPWD: string;
 	export const DESKTOP_SESSION: string;
 	export const SNAP_USER_DATA: string;
 	export const NVM_BIN: string;
@@ -176,7 +175,6 @@ declare module '$env/dynamic/private' {
 		npm_config_noproxy: string;
 		HOME: string;
 		SNAP_LIBRARY_PATH: string;
-		OLDPWD: string;
 		DESKTOP_SESSION: string;
 		SNAP_USER_DATA: string;
 		NVM_BIN: string;
